@@ -1,0 +1,35 @@
+{
+  "name": "matrix",
+  "version": "1.0.0",
+  "description": "Data visualisation",
+  "main": "index.html",
+  "scripts": {
+    "dev": "webpack --mode development",
+    "build:prod": "webpack --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sebastiantokarski/matrix.git"
+  },
+  "author": "Sebastian Tokarski",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sebastiantokarski/matrix/issues"
+  },
+  "homepage": "https://github.com/sebastiantokarski/matrix#readme",
+  "devDependencies": {
+    "@babel/core": "~7.6.0",
+    "@babel/preset-env": "~7.6.0",
+    "@babel/preset-react": "~7.0.0",
+    "babel-loader": "~8.0.6",
+    "eslint": "~6.4.0",
+    "eslint-config-google": "~0.14.0",
+    "eslint-loader": "~3.0.0",
+    "eslint-plugin-jsdoc": "~15.9.2",
+    "eslint-plugin-react": "~7.14.3",
+    "react": "~16.9.0",
+    "react-dom": "~16.9.0",
+    "webpack": "~4.40.2",
+    "webpack-cli": "~3.3.9"
+  }
+}
