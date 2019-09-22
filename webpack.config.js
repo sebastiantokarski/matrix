@@ -16,7 +16,7 @@ module.exports = {
     rules: [{
       enforce: 'pre',
       test: /\.(js|jsx)$/,
-      exclude: /node_modules/,
+      exclude: /node_modules|data/,
       loader: 'eslint-loader',
       options: {
         emitWarning: true,
@@ -34,6 +34,10 @@ module.exports = {
           ]
         }
       }
+    }, {
+      test: /\.css$/,
+      include: /node_modules/,
+      loaders: ['style-loader', 'css-loader'],
     }]
   }
 }
