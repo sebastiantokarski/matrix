@@ -31201,15 +31201,19 @@ function (_Component) {
     _classCallCheck(this, App);
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(App).call(this, props));
-    _this.matrixData = _data_matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"];
-    _this.currMouseOverEl = null;
     _this.state = {
-      histogramChartHour: null
+      histogramChartHour: null,
+      averageChartUnitType: 'value'
     };
     _this.handleMouseOver = _this.handleMouseOver.bind(_assertThisInitialized(_this));
     _this.showHistogramWithDelay = _this.showHistogramWithDelay.bind(_assertThisInitialized(_this));
     _this.getAverageForEveryHour = _this.getAverageForEveryHour.bind(_assertThisInitialized(_this));
     _this.getRoundValuesForEveryHour = _this.getRoundValuesForEveryHour.bind(_assertThisInitialized(_this));
+    _this.onUnitTypeChartChange = _this.onUnitTypeChartChange.bind(_assertThisInitialized(_this));
+    _this.matrixData = _data_matrix_js__WEBPACK_IMPORTED_MODULE_3__["default"];
+    _this.currMouseOverEl = null;
+    _this.averageValueForEveryHour = _this.getAverageForEveryHour();
+    _this.roundValuesForEveryHour = _this.getRoundValuesForEveryHour();
     return _this;
   }
   /**
@@ -31259,6 +31263,10 @@ function (_Component) {
 
       return hours;
     }
+    /**
+     * @param {Event} e
+     */
+
   }, {
     key: "handleMouseOver",
     value: function handleMouseOver(e) {
@@ -31286,17 +31294,44 @@ function (_Component) {
       }, delay);
     }
   }, {
+    key: "onUnitTypeChartChange",
+    value: function onUnitTypeChartChange(e) {
+      this.setState({
+        averageChartUnitType: e.target.value
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
-      var averageValueForEveryHour = this.getAverageForEveryHour();
-      var roundValuesForEveryHour = this.getRoundValuesForEveryHour();
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "container"
-      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AverageLineChart__WEBPACK_IMPORTED_MODULE_2__["default"], {
-        data: averageValueForEveryHour,
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+        className: "chart-unit"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("fieldset", {
+        className: "type"
+      }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        type: "radio",
+        name: "type",
+        value: "value",
+        id: "chart-unit-value",
+        onChange: this.onUnitTypeChartChange,
+        defaultChecked: true
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", {
+        htmlFor: "chart-unit-value"
+      }, "Show values"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+        type: "radio",
+        name: "type",
+        value: "percent",
+        id: "chart-unit-percent",
+        onChange: this.onUnitTypeChartChange
+      }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", {
+        htmlFor: "chart-unit-percent"
+      }, "Show percent"))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_AverageLineChart__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        data: this.averageValueForEveryHour,
+        unitType: this.state.averageChartUnitType,
         onMouseOver: this.handleMouseOver
       }), this.state.histogramChartHour !== null && react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_HistogramChart__WEBPACK_IMPORTED_MODULE_1__["default"], {
-        data: roundValuesForEveryHour[this.state.histogramChartHour],
+        data: this.matrixData[this.state.histogramChartHour],
         hour: this.state.histogramChartHour
       }));
     }
@@ -31355,10 +31390,10 @@ var AverageLineChart =
 function (_Component) {
   _inherits(AverageLineChart, _Component);
 
-  function AverageLineChart() {
+  function AverageLineChart(props) {
     _classCallCheck(this, AverageLineChart);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(AverageLineChart).apply(this, arguments));
+    return _possibleConstructorReturn(this, _getPrototypeOf(AverageLineChart).call(this, props));
   }
 
   _createClass(AverageLineChart, [{
@@ -31371,25 +31406,39 @@ function (_Component) {
             text: 'Average values for every hour'
           },
           subtitle: {
-            text: 'Source: matrix.js'
+            text: document.ontouchstart === undefined ? 'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
           },
           yAxis: {
             title: {
               text: 'Value'
+            },
+            compare: 'percent',
+            labels: {
+              format: "{value:.2f}".concat(this.props.unitType === 'percent' ? ' %' : '')
             }
           },
           xAxis: {
             title: {
               text: 'Hour'
+            },
+            labels: {
+              enabled: true
             }
           },
           tooltip: {
-            headerFormat: '<span style="font-size: 10px">Hour: {point.key}</span><br/>'
+            crosshairs: true,
+            headerFormat: '<span style="font-size: 10px">Hour {point.key}</span><br/>',
+            pointFormatter: function pointFormatter(pointFormat) {
+              var isPercent = this.props.unitType === 'percent';
+              pointFormat = pointFormat.replace('{point.y}', isPercent ? this.change : this.y.toFixed(2)).replace('{series.name}', this.series.name);
+              return pointFormat;
+            }
           },
           legend: {
             enabled: false
           },
           series: [{
+            type: 'area',
             name: 'Average value',
             data: this.props.data
           }],
@@ -31400,7 +31449,31 @@ function (_Component) {
                   mouseOver: this.props.onMouseOver
                 }
               }
+            },
+            area: {
+              fillColor: {
+                linearGradient: {
+                  x1: 0,
+                  y1: 0,
+                  x2: 0,
+                  y2: 1
+                },
+                stops: [[0, highcharts__WEBPACK_IMPORTED_MODULE_2___default.a.getOptions().colors[0]], [1, highcharts__WEBPACK_IMPORTED_MODULE_2___default.a.Color(highcharts__WEBPACK_IMPORTED_MODULE_2___default.a.getOptions().colors[0]).setOpacity(0).get('rgba')]]
+              },
+              marker: {
+                radius: 2
+              },
+              lineWidth: 1,
+              states: {
+                hover: {
+                  lineWidth: 1
+                }
+              },
+              threshold: null
             }
+          },
+          chart: {
+            zoomType: 'x'
           }
         }
       });
@@ -31413,7 +31486,8 @@ function (_Component) {
 
 AverageLineChart.propTypes = {
   data: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.array,
-  onMouseOver: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.func
+  onMouseOver: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.func,
+  unitType: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.string
 };
 
 /***/ }),
@@ -31482,7 +31556,6 @@ function (_Component) {
     value: function render() {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(highcharts_react_official__WEBPACK_IMPORTED_MODULE_3___default.a, {
         highcharts: highcharts__WEBPACK_IMPORTED_MODULE_2___default.a,
-        allowChartUpdate: true,
         options: {
           title: {
             text: this.props.hour ? "Data from ".concat(this.props.hour, " hour") : ''
@@ -31503,11 +31576,17 @@ function (_Component) {
           }, {
             visible: false
           }],
+          plotOptions: {
+            column: {
+              groupPadding: 0
+            }
+          },
           series: [{
             name: 'Histogram',
             type: 'histogram',
             xAxis: 1,
             baseSeries: 'singleValue',
+            binWidth: 0.5,
             zIndex: -1
           }, {
             name: 'Single value',
