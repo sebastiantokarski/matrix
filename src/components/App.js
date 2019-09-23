@@ -9,20 +9,73 @@ export default class App extends Component {
 
     this.state = {
       histogramChartHour: null,
-      averageChartUnitType: 'value',
     };
 
     this.handleMouseOver = this.handleMouseOver.bind(this);
     this.showHistogramWithDelay = this.showHistogramWithDelay.bind(this);
-    this.getAverageForEveryHour = this.getAverageForEveryHour.bind(this);
-    this.getRoundValuesForEveryHour = this.getRoundValuesForEveryHour.bind(this);
-    this.onUnitTypeChartChange = this.onUnitTypeChartChange.bind(this);
+    this.performDataProcessing = this.performDataProcessing.bind(this);
+    this.getHourDetails = this.getHourDetails.bind(this);
+    this.prepareChartData = this.prepareChartData.bind(this);
 
-    this.matrixData = matrix;
+    this.matrixData = this.performDataProcessing(matrix);
+    this.chartData = this.prepareChartData(this.matrixData);
     this.currMouseOverEl = null;
+  }
 
-    this.averageValueForEveryHour = this.getAverageForEveryHour();
-    this.roundValuesForEveryHour = this.getRoundValuesForEveryHour();
+  prepareChartData(data) {
+    const hoursDetails = data.hoursDetails;
+    const averageLineChart = hoursDetails.map((singleData) => singleData.averageValue);
+    const histogramChart = data.matrix;
+
+    return {
+      averageLineChart,
+      histogramChart,
+      minAxisX: data.minValue,
+      maxAxisX: data.maxValue,
+    };
+  }
+
+  getHourDetails(hourArr) {
+    const getSum = (a, b) => a + b;
+    const firstEl = hourArr[0];
+    const details = {
+      minValue: firstEl,
+      maxValue: firstEl,
+      averageValue: hourArr.reduce(getSum, 0) / hourArr.length,
+    }
+
+    return hourArr.reduce((details, currValue) => {
+      details.minValue = Math.min(details.minValue, currValue);
+      details.maxValue = Math.max(details.maxValue, currValue);
+
+      return details;
+    }, details);
+  }
+
+  performDataProcessing(matrix) {
+    const hoursDetails = [];
+    const hoursLength = matrix.length;
+    const firstEl = matrix && matrix[0] && matrix[0][0];
+    let minValue = firstEl;
+    let maxValue = firstEl;
+  
+    for (let i = 0; i < hoursLength; i++) {
+      const singleHour = matrix[i];
+      const singleHourDetails = this.getHourDetails(singleHour);
+
+      minValue = Math.min(minValue, singleHourDetails.minValue);
+      maxValue = Math.max(maxValue, singleHourDetails.maxValue);
+
+      hoursDetails.push(singleHourDetails);
+    }
+
+    return {
+      hoursDetails,
+      minValue,
+      maxValue,
+      hoursLength,
+      matrix,
+    };
   }
 
   /**
@@ -33,32 +86,6 @@ export default class App extends Component {
     const getSum = (a, b) => a + b;
 
     return arr.reduce(getSum, 0) / arr.length;
-  }
-
-  /**
-   * @return {number[]}
-   */
-  getAverageForEveryHour() {
-    const averageData = [];
-
-    for (let i = 0; i < this.matrixData.length; i++) {
-      averageData.push(this.getAverage(this.matrixData[i]));
-    }
-
-    return averageData;
-  }
-
-  /**
-   * @return {number[]}
-   */
-  getRoundValuesForEveryHour() {
-    const hours = [];
-
-    for (let i = 0; i < this.matrixData.length; i++) {
-      hours.push(this.matrixData[i].map((x) => Math.round(x)));
-    }
-
-    return hours;
   }
 
   /**
@@ -84,45 +111,19 @@ export default class App extends Component {
     }, delay);
   }
 
-  onUnitTypeChartChange(e) {
-    this.setState({
-      averageChartUnitType: e.target.value,
-    });
-  }
-
   render() {
     return (
       <div className="container">
-        <div className="chart-unit">
-          <fieldset className="type">
-            <input
-              type="radio"
-              name="type"
-              value="value"
-              id="chart-unit-value"
-              onChange={this.onUnitTypeChartChange}
-              defaultChecked />
-            <label
-              htmlFor="chart-unit-value">Show values</label>
-            <input
-              type="radio"
-              name="type"
-              value="percent"
-              id="chart-unit-percent"
-              onChange={this.onUnitTypeChartChange} />
-            <label
-              htmlFor="chart-unit-percent">Show percent</label>
-          </fieldset>
-        </div>
         <AverageLineChart
-          data={this.averageValueForEveryHour}
-          unitType={this.state.averageChartUnitType}
+          chartData={this.chartData.averageLineChart}
           onMouseOver={this.handleMouseOver}
         />
         {
           this.state.histogramChartHour !== null
           && <HistogramChart
-            data={this.matrixData[this.state.histogramChartHour]}
+            chartData={this.chartData.histogramChart}
+            minAxisX={this.chartData.minAxisX}
+            maxAxisX={this.chartData.maxAxisX}
             hour={this.state.histogramChartHour} />
         }
       </div>

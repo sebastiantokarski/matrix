@@ -23,10 +23,6 @@ export default class AverageLineChart extends Component {
           title: {
             text: 'Value',
           },
-          compare: 'percent',
-          labels: {
-            format: `{value:.2f}${this.props.unitType === 'percent' ? ' %' : ''}`,
-          },
         },
         xAxis: {
           title: {
@@ -40,10 +36,8 @@ export default class AverageLineChart extends Component {
           crosshairs: true,
           headerFormat: '<span style="font-size: 10px">Hour {point.key}</span><br/>',
           pointFormatter(pointFormat) {
-            const isPercent = this.props.unitType === 'percent';
-
             pointFormat = pointFormat
-                .replace('{point.y}', isPercent ? this.change : this.y.toFixed(2))
+                .replace('{point.y}', this.y.toFixed(2))
                 .replace('{series.name}', this.series.name);
 
             return pointFormat;
@@ -55,7 +49,7 @@ export default class AverageLineChart extends Component {
         series: [{
           type: 'area',
           name: 'Average value',
-          data: this.props.data,
+          data: this.props.chartData,
         }],
         plotOptions: {
           series: {
@@ -99,7 +93,7 @@ export default class AverageLineChart extends Component {
 }
 
 AverageLineChart.propTypes = {
-  data: PropTypes.array,
+  chartData: PropTypes.array,
   onMouseOver: PropTypes.func,
   unitType: PropTypes.string,
 };
