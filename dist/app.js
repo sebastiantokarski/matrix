@@ -31399,6 +31399,8 @@ function (_Component) {
   _createClass(AverageLineChart, [{
     key: "render",
     value: function render() {
+      var _this = this;
+
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(highcharts_react_official__WEBPACK_IMPORTED_MODULE_3___default.a, {
         highcharts: highcharts__WEBPACK_IMPORTED_MODULE_2___default.a,
         options: {
@@ -31429,7 +31431,7 @@ function (_Component) {
             crosshairs: true,
             headerFormat: '<span style="font-size: 10px">Hour {point.key}</span><br/>',
             pointFormatter: function pointFormatter(pointFormat) {
-              var isPercent = this.props.unitType === 'percent';
+              var isPercent = _this.props.unitType === 'percent';
               pointFormat = pointFormat.replace('{point.y}', isPercent ? this.change : this.y.toFixed(2)).replace('{series.name}', this.series.name);
               return pointFormat;
             }

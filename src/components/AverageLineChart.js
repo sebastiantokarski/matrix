@@ -8,6 +8,8 @@ export default class AverageLineChart extends Component {
     super(props);
   }
   render() {
+    const _this = this;
+
     return <HighchartsReact
       highcharts={Highcharts}
       options={{
@@ -40,7 +42,7 @@ export default class AverageLineChart extends Component {
           crosshairs: true,
           headerFormat: '<span style="font-size: 10px">Hour {point.key}</span><br/>',
           pointFormatter(pointFormat) {
-            const isPercent = this.props.unitType === 'percent';
+            const isPercent = _this.props.unitType === 'percent';
 
             pointFormat = pointFormat
                 .replace('{point.y}', isPercent ? this.change : this.y.toFixed(2))
