@@ -13,7 +13,6 @@ export default class HistogramChart extends Component {
   render() {
     return <HighchartsReact
       highcharts={Highcharts}
-      allowChartUpdate={true}
       options={{
         title: {
           text: this.props.hour ? `Data from ${this.props.hour} hour` : '',
@@ -30,11 +29,17 @@ export default class HistogramChart extends Component {
         }, {
           visible: false,
         }],
+        plotOptions: {
+          column: {
+            groupPadding: 0,
+          },
+        },
         series: [{
           name: 'Histogram',
           type: 'histogram',
           xAxis: 1,
           baseSeries: 'singleValue',
+          binWidth: 0.5,
           zIndex: -1,
         }, {
           name: 'Single value',
