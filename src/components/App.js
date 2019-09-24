@@ -1,7 +1,19 @@
-import React, { Component } from 'react';
-import HistogramChart from './HistogramChart';
-import AverageLineChart from './AverageLineChart';
-import matrix from '../data/matrix.js';
+import React, { Component, Fragment } from 'react';
+import ChartHistogram from './Chart/ChartHistogram';
+import ChartLine from './Chart/ChartLine';
+import Footer from './Footer';
+import matrix from '../data/matrix';
+import styled from 'styled-components';
+
+const Title = styled.h1`
+  text-align: center;
+  font-size: 2rem;
+  margin: 2rem 0;
+`;
+
+const ChartsWrapper = styled.div`
+  height: 100vh;
+`;
 
 export default class App extends Component {
   constructor(props) {
@@ -24,11 +36,15 @@ export default class App extends Component {
 
   prepareChartData(data) {
     const hoursDetails = data.hoursDetails;
-    const averageLineChart = hoursDetails.map((singleData) => singleData.averageValue);
+    const averageLineData = hoursDetails.map((singleData) => singleData.averageValue);
+    const rangeData = hoursDetails.map((singleData, index) => {
+      return [index, singleData.minValue, singleData.maxValue];
+    });
     const histogramChart = data.matrix;
 
     return {
-      averageLineChart,
+      averageLineData,
+      rangeData,
       histogramChart,
       minAxisX: data.minValue,
       maxAxisX: data.maxValue,
@@ -42,7 +58,7 @@ export default class App extends Component {
       minValue: firstEl,
       maxValue: firstEl,
       averageValue: hourArr.reduce(getSum, 0) / hourArr.length,
-    }
+    };
 
     return hourArr.reduce((details, currValue) => {
       details.minValue = Math.min(details.minValue, currValue);
@@ -58,7 +74,7 @@ export default class App extends Component {
     const firstEl = matrix && matrix[0] && matrix[0][0];
     let minValue = firstEl;
     let maxValue = firstEl;
-  
+
     for (let i = 0; i < hoursLength; i++) {
       const singleHour = matrix[i];
       const singleHourDetails = this.getHourDetails(singleHour);
@@ -93,7 +109,7 @@ export default class App extends Component {
    */
   handleMouseOver(e) {
     this.currMouseOverEl = e.target.x;
-    this.showHistogramWithDelay(this.currMouseOverEl, 300);
+    this.showHistogramWithDelay(this.currMouseOverEl, 500);
   }
 
   /**
@@ -113,20 +129,27 @@ export default class App extends Component {
 
   render() {
     return (
-      <div className="container">
-        <AverageLineChart
-          chartData={this.chartData.averageLineChart}
-          onMouseOver={this.handleMouseOver}
-        />
-        {
-          this.state.histogramChartHour !== null
-          && <HistogramChart
-            chartData={this.chartData.histogramChart}
-            minAxisX={this.chartData.minAxisX}
-            maxAxisX={this.chartData.maxAxisX}
-            hour={this.state.histogramChartHour} />
-        }
-      </div>
+      <Fragment>
+        <div className="container">
+          <Title>This is a visualization of data from the matrix.js file</Title>
+          <ChartsWrapper>
+            <ChartLine
+              chartAverageLineData={this.chartData.averageLineData}
+              chartRangeData={this.chartData.rangeData}
+              onMouseOver={this.handleMouseOver}
+            />
+            {
+              this.state.histogramChartHour !== null
+              && <ChartHistogram
+                chartData={this.chartData.histogramChart}
+                minAxisX={this.chartData.minAxisX}
+                maxAxisX={this.chartData.maxAxisX}
+                hour={this.state.histogramChartHour} />
+            }
+          </ChartsWrapper>
+        </div>
+        <Footer />
+      </Fragment>
     );
   }
 }

@@ -1,14 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
-import addHistogramModule from 'highcharts/modules/histogram-bellcurve';
+import { Chart, Highcharts, HighchartsReact } from './Chart';
 
-export default class HistogramChart extends Component {
+export default class ChartHistogram extends Chart {
   constructor(props) {
     super(props);
-
-    addHistogramModule(Highcharts);
   }
   render() {
     return <HighchartsReact
@@ -36,14 +32,16 @@ export default class HistogramChart extends Component {
           column: {
             groupPadding: 0,
           },
-        }, 
+        },
         tooltip: {
           pointFormatter(pointFormat) {
             pointFormat = pointFormat
                 .replace('x: ', 'Index: ')
                 .replace('y: ', 'Value: ')
                 .replace('{point.x}', this.x)
+                .replace('{point.x2}', this.x2)
                 .replace('{point.y}', this.y.toFixed(2))
+                .replace('{series.name}', this.series.name);
 
             return pointFormat;
           },
@@ -72,7 +70,7 @@ export default class HistogramChart extends Component {
   }
 }
 
-HistogramChart.propTypes = {
+ChartHistogram.propTypes = {
   chartData: PropTypes.array,
   hour: PropTypes.number,
 };

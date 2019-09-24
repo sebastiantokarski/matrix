@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
+import { Chart, Highcharts, HighchartsReact } from './Chart';
 
-export default class AverageLineChart extends Component {
+export default class ChartLine extends Chart {
   constructor(props) {
     super(props);
   }
@@ -12,7 +11,7 @@ export default class AverageLineChart extends Component {
       highcharts={Highcharts}
       options={{
         title: {
-          text: 'Average values for every hour',
+          text: 'Average and range values for every hour',
         },
         subtitle: {
           text: document.ontouchstart === undefined
@@ -38,18 +37,24 @@ export default class AverageLineChart extends Component {
           pointFormatter(pointFormat) {
             pointFormat = pointFormat
                 .replace('{point.y}', this.y.toFixed(2))
+                .replace('{point.low}', this.low)
+                .replace('{point.high}', this.high)
                 .replace('{series.name}', this.series.name);
 
             return pointFormat;
           },
         },
-        legend: {
-          enabled: false,
-        },
         series: [{
-          type: 'area',
           name: 'Average value',
-          data: this.props.chartData,
+          data: this.props.chartAverageLineData,
+          zIndex: 1,
+        }, {
+          name: 'Range values',
+          data: this.props.chartRangeData,
+          type: 'arearange',
+          color: Highcharts.getOptions().colors[0],
+          fillOpacity: 0.3,
+          zIndex: 0,
         }],
         plotOptions: {
           series: {
@@ -58,30 +63,6 @@ export default class AverageLineChart extends Component {
                 mouseOver: this.props.onMouseOver,
               },
             },
-          },
-          area: {
-            fillColor: {
-              linearGradient: {
-                x1: 0,
-                y1: 0,
-                x2: 0,
-                y2: 1,
-              },
-              stops: [
-                [0, Highcharts.getOptions().colors[0]],
-                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')],
-              ],
-            },
-            marker: {
-              radius: 2,
-            },
-            lineWidth: 1,
-            states: {
-              hover: {
-                lineWidth: 1,
-              },
-            },
-            threshold: null,
           },
         },
         chart: {
@@ -92,8 +73,9 @@ export default class AverageLineChart extends Component {
   }
 }
 
-AverageLineChart.propTypes = {
-  chartData: PropTypes.array,
+ChartLine.propTypes = {
+  chartAverageLineData: PropTypes.array,
+  chartRangeData: PropTypes.array,
   onMouseOver: PropTypes.func,
   unitType: PropTypes.string,
 };
