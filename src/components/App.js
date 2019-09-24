@@ -12,7 +12,6 @@ const Title = styled.h1`
 `;
 
 const ChartsWrapper = styled.div`
-  height: 100vh;
 `;
 
 export default class App extends Component {
@@ -138,14 +137,11 @@ export default class App extends Component {
               chartRangeData={this.chartData.rangeData}
               onMouseOver={this.handleMouseOver}
             />
-            {
-              this.state.histogramChartHour !== null
-              && <ChartHistogram
-                chartData={this.chartData.histogramChart}
-                minAxisX={this.chartData.minAxisX}
-                maxAxisX={this.chartData.maxAxisX}
-                hour={this.state.histogramChartHour} />
-            }
+            <ChartHistogram
+              chartData={this.chartData.histogramChart[this.state.histogramChartHour]}
+              minAxisX={this.chartData.minAxisX}
+              maxAxisX={this.chartData.maxAxisX}
+              hour={this.state.histogramChartHour} />
           </ChartsWrapper>
         </div>
         <Footer />

@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 
 const StyledFooter = styled.footer`
-  position: fixed;
   width: 100%;
   padding: 1rem;
   background-color: #d8dce3;
-  bottom: 0;
 `;
 
 const Paragraph = styled.p`
