@@ -26,18 +26,22 @@ export default class ChartHistogram extends Chart {
     const _this = this;
     const options = {
       title: {
-        text: this.props.hour !== null ? `Data from ${this.props.hour} hour` : '',
+        text: this.props.hour !== null ? `Data from ${this.props.hour + 1} hour` : '',
       },
       xAxis: [{
         visible: false,
       }, {
-        title: { text: 'values' },
+        title: {
+          text: 'values',
+        },
         alignTicks: false,
         min: this.props.minAxisX,
         max: this.props.maxAxisX,
       }],
       yAxis: [{
-        title: { text: 'Number of values' },
+        title: {
+          enabled: false,
+        },
         max: this.props.maxAxisX,
       }, {
         visible: false,
@@ -112,6 +116,7 @@ export default class ChartHistogram extends Chart {
       highcharts={Highcharts}
       ref={(ref) => this.chart = ref}
       options={options}
+      // For animating on update
       key={this.props.hour}
     />;
   }
