@@ -31,6 +31,8 @@ export default class App extends Component {
     this.matrixData = this.performDataProcessing(matrix);
     this.chartData = this.prepareChartData(this.matrixData);
     this.currMouseOverEl = null;
+
+    this.chartWrapper = React.createRef();
   }
 
   prepareChartData(data) {
@@ -126,12 +128,18 @@ export default class App extends Component {
     }, delay);
   }
 
+  componentDidMount() {
+    const chartWrapperHeight = this.chartWrapper.offsetHeight;
+
+    this.chartWrapper.setAttribute('style', `min-height: ${chartWrapperHeight}px`);
+  }
+
   render() {
     return (
       <Fragment>
         <div className="container">
           <Title>This is a visualization of data from the matrix.js file</Title>
-          <ChartsWrapper>
+          <ChartsWrapper ref={(ref) => this.chartWrapper = ref}>
             <ChartLine
               chartAverageLineData={this.chartData.averageLineData}
               chartRangeData={this.chartData.rangeData}

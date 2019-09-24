@@ -23,20 +23,30 @@ export default class ChartLine extends Chart {
       },
       yAxis: {
         title: {
-          text: 'Value',
+          enabled: false,
         },
       },
       xAxis: {
         title: {
           text: 'Hour',
         },
+        min: 0,
         labels: {
           enabled: true,
+          formatter() {
+            return this.value + 1;
+          },
         },
       },
       tooltip: {
-        crosshairs: true,
-        headerFormat: '<span style="font-size: 10px">Hour {point.key}</span><br/>',
+        headerFormat: '<span style="font-size: 10px">Hour %point.key%</span><br/>',
+        formatter(tooltip) {
+          const defaultTooltip = tooltip.defaultFormatter.call(this, tooltip);
+
+          defaultTooltip[0] = defaultTooltip[0].replace('%point.key%', this.key + 1);
+
+          return defaultTooltip;
+        },
         pointFormatter(pointFormat) {
           pointFormat = pointFormat
               .replace('{point.y}', this.y ? this.y.toFixed(2) : this.y)

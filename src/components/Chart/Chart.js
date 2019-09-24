@@ -27,6 +27,7 @@ class Chart extends Component {
             },
             stops: [
               [0, Highcharts.getOptions().colors[0]],
+              // eslint-disable-next-line
               [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.1).get('rgba')],
             ],
           },
