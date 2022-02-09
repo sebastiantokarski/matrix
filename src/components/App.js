@@ -1,47 +1,48 @@
-import React, { Component, Fragment } from 'react';
-import ChartHistogram from './Chart/ChartHistogram';
-import ChartLine from './Chart/ChartLine';
-import Footer from './Footer';
-import matrix from '../data/matrix';
-import styled from 'styled-components';
+import React, { Component, Fragment } from 'react'
+import ChartHistogram from './Chart/ChartHistogram'
+import ChartLine from './Chart/ChartLine'
+import Footer from './Footer'
+import matrix from '../data/matrix'
+import styled from 'styled-components'
 
 const Title = styled.h1`
   text-align: center;
   font-size: 2rem;
   margin: 2rem 0;
-`;
+`
 
-const ChartsWrapper = styled.div`
-`;
+const ChartsWrapper = styled.div``
 
 export default class App extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
       histogramChartHour: null,
-    };
+    }
 
-    this.handleMouseOver = this.handleMouseOver.bind(this);
-    this.showHistogramWithDelay = this.showHistogramWithDelay.bind(this);
-    this.performDataProcessing = this.performDataProcessing.bind(this);
-    this.getHourDetails = this.getHourDetails.bind(this);
-    this.prepareChartData = this.prepareChartData.bind(this);
+    this.handleMouseOver = this.handleMouseOver.bind(this)
+    this.showHistogramWithDelay = this.showHistogramWithDelay.bind(this)
+    this.performDataProcessing = this.performDataProcessing.bind(this)
+    this.getHourDetails = this.getHourDetails.bind(this)
+    this.prepareChartData = this.prepareChartData.bind(this)
 
-    this.matrixData = this.performDataProcessing(matrix);
-    this.chartData = this.prepareChartData(this.matrixData);
-    this.currMouseOverEl = null;
+    this.matrixData = this.performDataProcessing(matrix)
+    this.chartData = this.prepareChartData(this.matrixData)
+    this.currMouseOverEl = null
 
-    this.chartWrapper = React.createRef();
+    this.chartWrapper = React.createRef()
   }
 
   prepareChartData(data) {
-    const hoursDetails = data.hoursDetails;
-    const averageLineData = hoursDetails.map((singleData) => singleData.averageValue);
+    const hoursDetails = data.hoursDetails
+    const averageLineData = hoursDetails.map(
+      (singleData) => singleData.averageValue
+    )
     const rangeData = hoursDetails.map((singleData, index) => {
-      return [index, singleData.minValue, singleData.maxValue];
-    });
-    const histogramChart = data.matrix;
+      return [index, singleData.minValue, singleData.maxValue]
+    })
+    const histogramChart = data.matrix
 
     return {
       averageLineData,
@@ -49,41 +50,41 @@ export default class App extends Component {
       histogramChart,
       minAxisX: data.minValue,
       maxAxisX: data.maxValue,
-    };
+    }
   }
 
   getHourDetails(hourArr) {
-    const getSum = (a, b) => a + b;
-    const firstEl = hourArr[0];
+    const getSum = (a, b) => a + b
+    const firstEl = hourArr[0]
     const details = {
       minValue: firstEl,
       maxValue: firstEl,
       averageValue: hourArr.reduce(getSum, 0) / hourArr.length,
-    };
+    }
 
     return hourArr.reduce((details, currValue) => {
-      details.minValue = Math.min(details.minValue, currValue);
-      details.maxValue = Math.max(details.maxValue, currValue);
+      details.minValue = Math.min(details.minValue, currValue)
+      details.maxValue = Math.max(details.maxValue, currValue)
 
-      return details;
-    }, details);
+      return details
+    }, details)
   }
 
   performDataProcessing(matrix) {
-    const hoursDetails = [];
-    const hoursLength = matrix.length;
-    const firstEl = matrix && matrix[0] && matrix[0][0];
-    let minValue = firstEl;
-    let maxValue = firstEl;
+    const hoursDetails = []
+    const hoursLength = matrix.length
+    const firstEl = matrix && matrix[0] && matrix[0][0]
+    let minValue = firstEl
+    let maxValue = firstEl
 
     for (let i = 0; i < hoursLength; i++) {
-      const singleHour = matrix[i];
-      const singleHourDetails = this.getHourDetails(singleHour);
+      const singleHour = matrix[i]
+      const singleHourDetails = this.getHourDetails(singleHour)
 
-      minValue = Math.min(minValue, singleHourDetails.minValue);
-      maxValue = Math.max(maxValue, singleHourDetails.maxValue);
+      minValue = Math.min(minValue, singleHourDetails.minValue)
+      maxValue = Math.max(maxValue, singleHourDetails.maxValue)
 
-      hoursDetails.push(singleHourDetails);
+      hoursDetails.push(singleHourDetails)
     }
 
     return {
@@ -92,7 +93,7 @@ export default class App extends Component {
       maxValue,
       hoursLength,
       matrix,
-    };
+    }
   }
 
   /**
@@ -100,17 +101,17 @@ export default class App extends Component {
    * @return {number}
    */
   getAverage(arr) {
-    const getSum = (a, b) => a + b;
+    const getSum = (a, b) => a + b
 
-    return arr.reduce(getSum, 0) / arr.length;
+    return arr.reduce(getSum, 0) / arr.length
   }
 
   /**
    * @param {Event} e
    */
   handleMouseOver(e) {
-    this.currMouseOverEl = e.target.x;
-    this.showHistogramWithDelay(this.currMouseOverEl, 500);
+    this.currMouseOverEl = e.target.x
+    this.showHistogramWithDelay(this.currMouseOverEl, 500)
   }
 
   /**
@@ -122,38 +123,44 @@ export default class App extends Component {
       if (hour === this.currMouseOverEl) {
         this.setState({
           histogramChartHour: hour,
-        });
+        })
       }
-      clearTimeout(timerId);
-    }, delay);
+      clearTimeout(timerId)
+    }, delay)
   }
 
   componentDidMount() {
-    const chartWrapperHeight = this.chartWrapper.offsetHeight;
+    const chartWrapperHeight = this.chartWrapper.offsetHeight
 
-    this.chartWrapper.setAttribute('style', `min-height: ${chartWrapperHeight}px`);
+    this.chartWrapper.setAttribute(
+      'style',
+      `min-height: ${chartWrapperHeight}px`
+    )
   }
 
   render() {
     return (
       <Fragment>
-        <div className="container">
+        <div className='container'>
           <Title>This is a visualization of data from the matrix.js file</Title>
-          <ChartsWrapper ref={(ref) => this.chartWrapper = ref}>
+          <ChartsWrapper ref={(ref) => (this.chartWrapper = ref)}>
             <ChartLine
               chartAverageLineData={this.chartData.averageLineData}
               chartRangeData={this.chartData.rangeData}
               onMouseOver={this.handleMouseOver}
             />
             <ChartHistogram
-              chartData={this.chartData.histogramChart[this.state.histogramChartHour]}
+              chartData={
+                this.chartData.histogramChart[this.state.histogramChartHour]
+              }
               minAxisX={this.chartData.minAxisX}
               maxAxisX={this.chartData.maxAxisX}
-              hour={this.state.histogramChartHour} />
+              hour={this.state.histogramChartHour}
+            />
           </ChartsWrapper>
         </div>
         <Footer />
       </Fragment>
-    );
+    )
   }
 }

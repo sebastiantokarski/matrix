@@ -1,17 +1,17 @@
-import { Component } from 'react';
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
-import addMoreHighcharts from 'highcharts/highcharts-more';
-import addHistogramModule from 'highcharts/modules/histogram-bellcurve';
+import { Component } from 'react'
+import Highcharts from 'highcharts'
+import HighchartsReact from 'highcharts-react-official'
+import addMoreHighcharts from 'highcharts/highcharts-more'
+import addHistogramModule from 'highcharts/modules/histogram-bellcurve'
 
 class Chart extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
-    addMoreHighcharts(Highcharts);
-    addHistogramModule(Highcharts);
+    addMoreHighcharts(Highcharts)
+    addHistogramModule(Highcharts)
 
-    this.setHighchartsConfig();
+    this.setHighchartsConfig()
   }
 
   setHighchartsConfig() {
@@ -27,8 +27,13 @@ class Chart extends Component {
             },
             stops: [
               [0, Highcharts.getOptions().colors[0]],
-              // eslint-disable-next-line
-              [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0.1).get('rgba')],
+              [
+                1,
+                // eslint-disable-next-line
+                Highcharts.Color(Highcharts.getOptions().colors[0])
+                  .setOpacity(0.1)
+                  .get('rgba'),
+              ],
             ],
           },
           marker: {
@@ -43,12 +48,8 @@ class Chart extends Component {
           threshold: null,
         },
       },
-    });
+    })
   }
 }
 
-export {
-  Chart,
-  Highcharts,
-  HighchartsReact,
-};
+export { Chart, Highcharts, HighchartsReact }
