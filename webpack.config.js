@@ -1,42 +1,54 @@
-const path = require('path');
+const path = require('path')
+const fs = require('fs')
+const ESLintPlugin = require('eslint-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-const SOURCE_DIR = path.resolve(__dirname, 'src');
-const DIST_DIR = path.resolve(__dirname, 'dist');
+const SOURCE_DIR = path.resolve(__dirname, 'src')
+const DIST_DIR = path.resolve(__dirname, 'dist')
+
+const appDirectory = fs.realpathSync(process.cwd())
+const resolveAppPath = (relativePath) =>
+  path.resolve(appDirectory, relativePath)
 
 module.exports = {
   mode: 'development',
   entry: SOURCE_DIR,
   output: {
-    path: DIST_DIR,
-    filename: 'app.js',
+    filename: 'static/js/bundle.js',
   },
-  watch: true,
+  devServer: {
+    static: {
+      directory: resolveAppPath('public'),
+    },
+    compress: true,
+    port: 3000,
+  },
   devtool: 'source-map',
   module: {
-    rules: [{
-      enforce: 'pre',
-      test: /\.(js|jsx)$/,
-      exclude: /node_modules|data/,
-      loader: 'eslint-loader',
-      options: {
-        emitWarning: true,
-        configFile: './eslintrc.json',
-      }
-    }, {
-      test: /\.(js|jsx)$/,
-      exclude: /node_modules/,
-      use: {
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            '@babel/preset-env',
-            '@babel/preset-react',
-          ]
-        }
-      }
-    }, {
-      test: /\.css$/,
-      loaders: ['style-loader', 'css-loader'],
-    }]
-  }
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react'],
+          },
+        },
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
+  plugins: [
+    new ESLintPlugin({
+      exclude: ['node_modules', 'src/data/*.js'],
+    }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: resolveAppPath('public/index.html'),
+    }),
+  ],
 }
